@@ -31,7 +31,7 @@ jobs:
         tags: ${{ secrets.ACR_NAME }}.azurecr.io/${{ github.repository }}:latest
 
     - name: Set up Azure CLI
-      uses: azure/setup-azure-cli@v1
+      uses: azure/cli@v1
 
     - name: Login to Azure
       run: az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
