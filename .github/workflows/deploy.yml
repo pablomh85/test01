@@ -1,7 +1,6 @@
 on: [push]
 
 name: AzureCLISample
-
 jobs:
 
   build-and-deploy:
