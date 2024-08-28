@@ -6,8 +6,9 @@ on:
       - main
 
 jobs:
-  build:
-     runs-on: self-hosted
+  build-and-deploy:
+    runs-on: self-hosted
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -15,14 +16,19 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
+    - name: Log in to ACR
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ secrets.ACR_NAME }}.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
         context: .
         push: true
         tags: ${{ secrets.ACR_NAME }}.azurecr.io/${{ github.repository }}:latest
-      env:
-        DOCKER_BUILDKIT: 1
 
     - name: Set up Azure CLI
       uses: azure/setup-azure-cli@v1
@@ -31,9 +37,9 @@ jobs:
       run: az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
 
     - name: Connect to AKS
-      run: az aks get-credentials --resource-group rg-ssib-imssbienestar-qa-aks-01 --name aks-mxce-qa-aks-01
+      run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
 
     - name: Deploy to AKS
       run: |
-        kubectl apply -f k8s/
+        kubectl apply -f k8s/deployment.yml
         kubectl rollout status deployment/Prueba01
