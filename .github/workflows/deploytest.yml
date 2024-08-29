@@ -39,11 +39,10 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-         az acr build --agent-pool -image Prueba01:latest --registry crmxceqaaks01 --resource-group rg-ssib-imssbienestar-qa-mexicocentral-01 --file ${{ github.workspace }}/dockerfile --platform linux .
+         az acr build --agent-pool -image Prueba01:latest --registry crmxceqaaks02 --resource-group rg-ssib-imssbienestar-qa-mexicocentral-01 --file ${{ github.workspace }}/dockerfile --platform linux .
          
     - name: Connect to AKS
       run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
-
 
     - name: Deploy to AKS
       run: |
