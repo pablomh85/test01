@@ -23,19 +23,24 @@ jobs:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.ACR_NAME }}.azurecr.io/${{ github.repository }}:latest
+#    - name: Build and push Docker image
+#      uses: docker/build-push-action@v4
+#      with:
+#        context: .
+#        push: true
+#        tags: ${{ secrets.ACR_NAME }}.azurecr.io/${{ github.repository }}:latest
 
-
+  
     - name: Azure login
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-                
+    - name: ACRBuild
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+         az acr build --agent-pool -image Prueba01:latest --registry crmxceqaaks01 --resource-group rg-ssib-imssbienestar-qa-mexicocentral-01 --file ${{ github.workspace }}/dockerfile --platform linux .
+         
     - name: Connect to AKS
       run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
 
